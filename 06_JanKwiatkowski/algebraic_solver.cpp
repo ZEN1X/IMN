@@ -152,7 +152,7 @@ void solve(init_vectors &data, const std::string &filename) {
 
     std::vector<double> V(N);
 
-    pmgmres_ilu_cr(static_cast<int>(N), nz_num, ia.data(), ja.data(), a.data(), V.data(), b.data(), 500, 500, 1e-8,
+    pmgmres_ilu_cr(N, nz_num, ia.data(), ja.data(), a.data(), V.data(), b.data(), 500, 500, 1e-8,
                    1e-8);
 
     // save to file
