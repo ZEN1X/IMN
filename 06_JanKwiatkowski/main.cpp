@@ -1,5 +1,6 @@
-#include "algebraic_solver.h"
+#include <cmath>
 #include <fstream>
+#include "algebraic_solver.h"
 #include "constants.h"
 
 void print_test_a_b(const init_vectors &data) {

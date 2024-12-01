@@ -6,6 +6,7 @@
 #define ALGEBRAIC_SOLVER_H
 
 #include <array>
+#include <string>
 #include "types.h"
 
 double rho(double x, double y, double xmax, double ymax, double sigma);

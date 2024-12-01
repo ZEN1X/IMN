@@ -4,11 +4,10 @@
 
 #include "algebraic_solver.h"
 #include <cmath>
-#include "constants.h"
-#include "mgmres.hpp"
-#include <string>
 #include <fstream>
 #include <iomanip>
+#include "constants.h"
+#include "mgmres.hpp"
 
 
 double rho(const double x, const double y, const double xmax, const double ymax, const double sigma) {
