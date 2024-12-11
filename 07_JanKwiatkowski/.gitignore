@@ -53,6 +53,8 @@ Temporary Items
 #############################
 build/
 lab7
+output/
+plots/
 
 #############################
 # clangd
