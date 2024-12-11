@@ -14,7 +14,8 @@ constexpr int J1 = 55;
 constexpr int J2 = J1 + 2;
 constexpr int IT_MAX = 20000;
 
-using comp_grid = std::array<std::array<double, NY + 1>, NX + 1>;
+using row = std::array<double, NY + 1>;
+using comp_grid = std::array<row, NX + 1>;
 
 double Q_out(const double Q_in);
 
@@ -22,7 +23,7 @@ bool is_edge(int i, int j);
 
 void PSI_BC(comp_grid& PSI, double Q_in);
 
-void ZETA_BC(comp_grid& ZETA, double Q_in);
+void ZETA_BC(comp_grid& ZETA, const comp_grid& PSI, double Q_in);
 
 double calculate_GAMMA(const comp_grid& PSI, const comp_grid& ZETA);
 

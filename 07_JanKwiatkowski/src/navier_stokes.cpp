@@ -12,7 +12,7 @@
  * @return double, calculated Q_out
  */
 double Q_out(double Q_in) {
-  return Q_in * std::pow((NY - J1) / NY, 3);
+  return Q_in * std::pow((NY - J1) / (double)NY, 3);
 }
 
 /**
@@ -86,7 +86,7 @@ void PSI_BC(comp_grid& PSI, double Q_in) {
  * @param grid the grid we're solving
  * @param Q_in
  */
-void ZETA_BC(comp_grid& ZETA, double Q_in) {
+void ZETA_BC(comp_grid& ZETA, const comp_grid& PSI, double Q_in) {
   for (int j = J1; j <= NY; ++j) {  // A
     double y = DELTA * j;
     double y_j1 = DELTA * J1;
@@ -101,19 +101,19 @@ void ZETA_BC(comp_grid& ZETA, double Q_in) {
   }
 
   for (int i = 1; i < NX; ++i) {  // B
-    ZETA[i][NY] = (2 / (DELTA * DELTA)) * (ZETA[i][NY - 1] - ZETA[i][NY]);
+    ZETA[i][NY] = (2 / (DELTA * DELTA)) * (PSI[i][NY - 1] - PSI[i][NY]);
   }
 
   for (int i = I1 + 1; i < NX; ++i) {  // D
-    ZETA[i][0] = (2 / (DELTA * DELTA)) * (ZETA[i][1] - ZETA[i][0]);
+    ZETA[i][0] = (2 / (DELTA * DELTA)) * (PSI[i][1] - PSI[i][0]);
   }
 
   for (int j = 1; j < J1; ++j) {  // E
-    ZETA[I1][j] = (2 / (DELTA * DELTA)) * (ZETA[I1 + 1][j] - ZETA[I1][j]);
+    ZETA[I1][j] = (2 / (DELTA * DELTA)) * (PSI[I1 + 1][j] - PSI[I1][j]);
   }
 
   for (int i = 1; i <= I1; ++i) {  // F
-    ZETA[i][J1] = (2 / (DELTA * DELTA)) * (ZETA[i][J1 + 1] - ZETA[i][J1]);
+    ZETA[i][J1] = (2 / (DELTA * DELTA)) * (PSI[i][J1 + 1] - PSI[i][J1]);
   }
 
   ZETA[I1][J1] = 0.5 * (ZETA[I1 - 1][J1] + ZETA[I1][J1 - 1]);  // E/F apex
@@ -161,7 +161,7 @@ void solve(double Q_in) {
 
           ZETA[i][j] = 0.25 * (ZETA[i + 1][j] + ZETA[i - 1][j] +
                                ZETA[i][j + 1] + ZETA[i][j - 1]) -
-                       OMEGA * (1 / (16 * MU)) *
+                       OMEGA * (RHO / (16 * MU)) *
                            ((PSI[i][j + 1] - PSI[i][j - 1]) *
                                 (ZETA[i + 1][j] - ZETA[i - 1][j]) -
                             (PSI[i + 1][j] - PSI[i - 1][j]) *
@@ -176,7 +176,7 @@ void solve(double Q_in) {
     }
 
     // modify ZETA
-    ZETA_BC(ZETA, Q_in);
+    ZETA_BC(ZETA, PSI, Q_in);
 
     // error-control
     double gamma = calculate_GAMMA(PSI, ZETA);
@@ -188,16 +188,17 @@ void solve(double Q_in) {
   // save output
   std::string filename = "wyn";
   if (Q_in == 4000) {
-    filename += "Q4000";
+    filename += "_Q4000";
   } else if (Q_in == -4000) {
-    filename += "Qm4000";
+    filename += "_Qm4000";
   }
   filename += ".dat";
 
-  std::fstream file(filename);
+  std::ofstream file(filename);
 
-  for (int i = 0; i <= NX; ++i) {
-    for (int j = 0; j <= NY; ++j) {
+  // dont include edges, otherwise the plot breaks
+  for (int i = 1; i < NX; ++i) {
+    for (int j = 1; j < NY; ++j) {
       file << i * DELTA << ' ' << j * DELTA << ' ' << PSI[i][j] << ' '
            << ZETA[i][j] << ' ' << U[i][j] << ' ' << V[i][j] << '\n';
     }
