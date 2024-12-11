@@ -24,4 +24,6 @@ void PSI_BC(comp_grid& PSI, double Q_in);
 
 void ZETA_BC(comp_grid& ZETA, double Q_in);
 
+double calculate_GAMMA(const comp_grid& PSI, const comp_grid& ZETA);
+
 #endif /* NAVIER_STOKES_H */

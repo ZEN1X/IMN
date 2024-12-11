@@ -114,3 +114,14 @@ void ZETA_BC(comp_grid& ZETA, double Q_in) {
 
   ZETA[I1][J1] = 0.5 * (ZETA[I1 - 1][J1] + ZETA[I1][J1 - 1]);  // E/F apex
 }
+
+double calculate_GAMMA(const comp_grid& PSI, const comp_grid& ZETA) {
+  double gamma = 0.0;
+
+  for (int i = 1; i < NX; ++i) {
+    gamma += PSI[i + 1][J2] + PSI[i - 1][J2] + PSI[i][J2 + 1] + PSI[i][J2 - 1] -
+             4 * PSI[i][J2] - DELTA * DELTA * ZETA[i][J2];
+  }
+
+  return gamma;
+}
