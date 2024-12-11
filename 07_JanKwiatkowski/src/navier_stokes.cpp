@@ -1,5 +1,9 @@
 #include "navier_stokes.h"
 #include <cmath>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 /**
  * @brief Calculate Q_out based on Q_in.
@@ -115,6 +119,13 @@ void ZETA_BC(comp_grid& ZETA, double Q_in) {
   ZETA[I1][J1] = 0.5 * (ZETA[I1 - 1][J1] + ZETA[I1][J1 - 1]);  // E/F apex
 }
 
+/**
+ * @brief Calculate the GAMMA error value.
+ *
+ * @param PSI PSI grid
+ * @param ZETA ZETA grid
+ * @return double, calculated GAMMA error
+ */
 double calculate_GAMMA(const comp_grid& PSI, const comp_grid& ZETA) {
   double gamma = 0.0;
 
@@ -124,4 +135,71 @@ double calculate_GAMMA(const comp_grid& PSI, const comp_grid& ZETA) {
   }
 
   return gamma;
+}
+
+/**
+ * @brief Solve the Navier-Stokes equation using relaxation.
+ *
+ * @param Q_in
+ */
+void solve(double Q_in) {
+  // declare and zero-init grids
+  comp_grid PSI{}, ZETA{}, U{}, V{};
+
+  // initialize PSI
+  PSI_BC(PSI, Q_in);
+
+  // relax
+  for (int it = 1; it <= IT_MAX; ++it) {
+    double OMEGA = it < 2000 ? 0 : 1;
+
+    for (int i = 1; i < NX; ++i) {
+      for (int j = 1; j < NY; ++j) {
+        if (!is_edge(i, j)) {
+          PSI[i][j] = 0.25 * (PSI[i + 1][j] + PSI[i - 1][j] + PSI[i][j + 1] +
+                              PSI[i][j - 1] - DELTA * DELTA * ZETA[i][j]);
+
+          ZETA[i][j] = 0.25 * (ZETA[i + 1][j] + ZETA[i - 1][j] +
+                               ZETA[i][j + 1] + ZETA[i][j - 1]) -
+                       OMEGA * (1 / (16 * MU)) *
+                           ((PSI[i][j + 1] - PSI[i][j - 1]) *
+                                (ZETA[i + 1][j] - ZETA[i - 1][j]) -
+                            (PSI[i + 1][j] - PSI[i - 1][j]) *
+                                (ZETA[i][j + 1] - ZETA[i][j - 1]));
+
+          // central derivative in y-direction
+          U[i][j] = (PSI[i][j + 1] - PSI[i][j - 1]) / (2 * DELTA);
+          // central derivative in x-direction
+          V[i][j] = -(PSI[i + 1][j] - PSI[i - 1][j]) / (2 * DELTA);
+        }
+      }
+    }
+
+    // modify ZETA
+    ZETA_BC(ZETA, Q_in);
+
+    // error-control
+    double gamma = calculate_GAMMA(PSI, ZETA);
+    std::cout << "Iter: " << it << ", GAMMA: " << gamma << '\n';
+  }
+
+  // save output
+  std::string filename = "wyn";
+  if (Q_in == 4000) {
+    filename += "Q4000";
+  } else if (Q_in == -4000) {
+    filename += "Qm4000";
+  }
+  filename += ".dat";
+
+  std::fstream file(filename);
+
+  for (int i = 0; i <= NX; ++i) {
+    for (int j = 0; j <= NY; ++j) {
+      file << i * DELTA << ' ' << j * DELTA << ' ' << PSI[i][j] << ' '
+           << ZETA[i][j] << ' ' << U[i][j] << ' ' << V[i][j] << '\n';
+    }
+
+    file << '\n';
+  }
 }
