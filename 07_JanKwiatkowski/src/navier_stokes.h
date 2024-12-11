@@ -16,4 +16,12 @@ constexpr int IT_MAX = 20000;
 
 using comp_grid = std::array<std::array<double, NY + 1>, NX + 1>;
 
+double Q_out(const double Q_in);
+
+bool is_edge(int i, int j);
+
+void PSI_BC(comp_grid& grid, double Q_in);
+
+void ZETA_BC(comp_grid& grid, double Q_in);
+
 #endif /* NAVIER_STOKES_H */
