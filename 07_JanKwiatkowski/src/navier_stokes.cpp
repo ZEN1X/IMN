@@ -180,7 +180,9 @@ void solve(double Q_in) {
 
     // error-control
     double gamma = calculate_GAMMA(PSI, ZETA);
-    std::cout << "Iter: " << it << ", GAMMA: " << gamma << '\n';
+    if (it % 100 == 0) {
+      std::cout << "Iter: " << it << ", GAMMA: " << gamma << '\n';
+    }
   }
 
   // save output
