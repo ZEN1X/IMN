@@ -14,8 +14,10 @@ function build_and_run() {
 
   rm -r build
   echo -e "${RED}! running the binary, please wait${NC}"
-  ./lab7
-  gnuplot plot_lab7.plt
+  ./lab8
+  # gnuplot plot_lab7.plt
+  gnuplot plot_u_D0_D01.plt
+  gnuplot plot_x_c_v.plt
   mkdir output
   mkdir plots
   mv -- *.dat output/
