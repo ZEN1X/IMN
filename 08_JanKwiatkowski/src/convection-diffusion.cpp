@@ -197,6 +197,7 @@ auto solve(double D) -> void {
         for (int j = 0; j <= NY; ++j) {
           u_file << i << '\t' << j << '\t' << u0[i][j] << '\n';
         }
+        u_file << '\n';
       }
       u_file << '\n';
     }
