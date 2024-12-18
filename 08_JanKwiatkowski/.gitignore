@@ -52,7 +52,7 @@ Temporary Items
 # Build files
 #############################
 build/
-lab7
+lab[0-9]*
 output/
 plots/
 
