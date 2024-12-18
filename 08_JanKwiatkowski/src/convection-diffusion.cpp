@@ -2,7 +2,9 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <indicators/indicators.hpp>
 #include <stdexcept>
+#include <string>
 
 v_field::v_field(const comp_grid& psi) : x{}, y{} {
   for (int i = 1; i < NX; ++i) {
@@ -120,6 +122,15 @@ auto solve(double D) -> void {
   std::ofstream stats_file{stats_filename};
   std::ofstream u_file{u_filename};
 
+  // progress indicator
+  indicators::show_console_cursor(false);
+
+  using namespace indicators;
+  indicators::BlockProgressBar bar{
+      option::BarWidth{80}, option::ForegroundColor{Color::white},
+      option::FontStyles{std::vector<FontStyle>{FontStyle::bold}},
+      option::MaxProgress{IT_MAX}};
+
   for (int it = 1; it <= IT_MAX; ++it) {
     // Picard start
     u1 = u0;
@@ -201,7 +212,14 @@ auto solve(double D) -> void {
       }
       u_file << '\n';
     }
+
+    bar.set_option(
+        option::PostfixText{std::to_string(it) + "/" + std::to_string(IT_MAX)});
+    bar.tick();
   }
+
+  bar.mark_as_completed();
+  indicators::show_console_cursor(true);
 }
 
 auto save_v_field() -> void {
