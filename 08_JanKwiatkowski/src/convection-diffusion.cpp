@@ -126,7 +126,7 @@ auto solve(double D) -> void {
 
     for (int k = 1; k <= 20; ++k) {
       for (int i = 0; i <= NX; ++i) {
-        for (int j = 0; j <= NY; ++j) {
+        for (int j = 1; j <= NY; ++j) {
           if (i >= I1 && i <= I2 && j <= J1) {  // blockade
             continue;
 
