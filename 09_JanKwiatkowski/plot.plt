@@ -1,5 +1,5 @@
 reset
-set term png size 2500, 5000 enhanced font "Helvetica, 32" lw 2
+set term png size 2500, 5000 enhanced font "Arial, 32" lw 2
 set size square
 
 set lmargin  1.5
