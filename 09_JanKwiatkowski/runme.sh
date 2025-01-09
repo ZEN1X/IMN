@@ -27,7 +27,7 @@ function build_and_run() {
 }
 
 function clean() {
-  rm ./lab8
+  rm ./lab9
   rm -r plots/
   rm -r output/
   echo -e "${RED}! executable, \"plots\" subdirectory and \"output\" subdirectory all removed${NC}"
